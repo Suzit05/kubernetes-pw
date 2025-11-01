@@ -1,0 +1,115 @@
+Link: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+********************************************
+Install Kubernetes on Linux (Ubuntu)
+********************************************
+> sudo apt-get update
+> sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+> curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+> sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
+> echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+> sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as command-not-found to work correctly
+> sudo apt-get update
+> sudo apt-get install -y kubectl kubeadm kubectl
+
+# to Verify the Installtion
+--------------------------------------------
+> kubectl version
+> kubeadm version
+> kubelet version
+
+# Download Minukube
+--------------------------------------------
+Link:  https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download
+choose your OS: Linux
+> curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube-linux-amd64
+> sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
+
+#Start the minikube
+-------------------------------
+> minikube start
+
+#Get the Running Pods
+-------------------------------
+> kubectl get pods
+
+Terminology
+-------------------------------
+1. POD:Smallest unit in kubernetes -- it will run your container
+2. Deployment: Manages pods -- helps in updates , scaling ,restarts 
+3. ConfigMap: stores non-sensetive appconfig(link , .env)
+4. secret: stores sensitive data like passwords
+5. ingress: Routes the traffic from outside into your service
+6. PVC: Percistance Storage for your Application
+
+How to set up Kubernetes Cluster Locally??
+-----------------------------------------------
+Step:1 Install the following
+-----------------------------------------------
+1. kubectl
+2. minikube
+
+-----------------------------------------------
+Step:2 Start the Minikube
+-----------------------------------------------
+> minikube start
+
+-----------------------------------------------
+Step:3 Check the Status
+-----------------------------------------------
+> kubectl get nodes
+
+-----------------------------------------------
+Exercise:1 Deploy a Simple Application 
+-----------------------------------------------
+A. Create A Deployment
+
+> kubectl create deployment my-nginx --image=nginx
+output: deployment.apps/my-nginx created
+
+B. check the Status
+> kubectl get pods
+
+NAME                            READY   STATUS    RESTARTS   AGE
+my-nginx-5b584c864b-bdbjq       1/1     Running   0          2m13s
+my-nginx-sep-688955b9d5-9fb7r   1/1     Running   0          39s
+mysql-0                         1/1     Running   0          2m9s
+mysql-1                         1/1     Running   0          2m6s
+mysql-2                         1/1     Running   0          2m4s
+nginx-deploy-58b577b64-sggbf    0/1     Pending   0          2m12s
+
+Once the Status is running we can proceed to the next part
+
+c. Expose it with a service
+> kubectl expose deployment my-nginx --port=80 --type=NodePort
+output: service/my-nginx exposed
+
+Note: This will create a service that maps the random high port on your local machine
+
+> minikube service my-nginx --url
+output:
+http://127.0.0.1:32773
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+------------------------------------------------------------
+Exercise: 2 Using ConfigMap Kubernetes
+------------------------------------------------------------
+
+- it will inject the configuration into must contains some important information like apiversion ,kind,data
+Goal: Serve a custom HTML File in a Nginx container using ConfigMap
+
+Step:1 Create configmap.yml file  (Available in Folder)
+Step:2 Apply the configMap File
+Step:3 Create a deployment using configMap (Available in folder)
+Step:4 Apply the deployment
+> kubectl apply -f deployment.yml
+    output: deployment.apps/nginx-deploymentment created
+
+Step:5 Expose it with service
+> kubectl expose deployment nginx-deployment --port=80 --type=NodePort
+    output: service/nginx-deploy exposed
+
+Step:6 Get the url
+> minikube service my-nginx --url
+    output: http://127.0.0.1:33455
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
