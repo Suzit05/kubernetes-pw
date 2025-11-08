@@ -1,0 +1,44 @@
+1. create a HTMl page and deply it using nginx on kubernetes cluster 
+2. Roll out the new update and check the output
+3. rollback to the previous version 
+
+Hint:
+1. Create 'index.html' page
+2. Create 'index-configmap.yml' file
+3. Apply:
+    > kubectl apply -f index-configmap.yml
+        output: configmap/nginx-html configured
+4. Save this as nginx-deploy.yml file
+5. Apply:
+    > kubectl apply -f nginx-deploy.yml
+    output: deployment.apps/nginx-deploy unchanged
+6. Expose Deployment as Service
+> kubectl expose deployment nginx-deployment --type=NodePort --port=80
+    output: service/nginx-deploy exposed
+7. kubectl get svc
+ output:
+        kubernetes     ClusterIP   10.96.0.1      <none>        443/TCP        85d
+        nginx-deploy   NodePort    10.98.10.233   <none>        80:30635/TCP   61s
+8. Run and check
+> minikube service nginx-deploy
+
+9. ROll OUT TO NEW VERSION
+----------------------------
+change your index.html file 
+
+<p> Version 2.0</p>
+
+Re-apply:
+> kubectl apply -f index-configmap.yml
+
+Restart the Deployment so pods pick the new config
+> kubectl rollout restart deployment nginx-deployment
+
+Check the Rollout Status
+> kubectl rollout status deployment nginx-deployment
+
+
+ROLL BACK
+-----------------------------------------------------
+>  kubectl rollout undo deployment nginx-deploy
+> kubectl rollout status deployment nginx-deploy

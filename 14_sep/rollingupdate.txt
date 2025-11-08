@@ -43,7 +43,7 @@ Step: 1 Install Helm
 
 Step:2 Add a Helm Repo
 ---------------------------------------------------------
-> helm repo add bitnami https://charts.binami.com/bitnami
+> helm repo add bitnami https://charts.bitnami.com/bitnami
 
 > helm repo update
 # search for available charts
