@@ -1,0 +1,80 @@
+Replica Set:
+----------------------------------------------------------
+- it is specfying numbers of pods replicas which are running all the items
+- if any pod fails then it will  recreate in replcement 
+
+Deployment
+----------------------------------------------------------
+- it provides all controllers updates and all the rollback features
+- if any pod fails or any controller fails it can restrat automatically
+
+****************************************************************************
+CREATE A POD
+****************************************************************************
+Step:1 Create pod.yml file and save it 
+Step:2 run the Below Commands
+    - kubectl apply -f pod.yml
+    - kubectl get pods
+    - kubectl describe pod nginx
+
+****************************************************************************
+CREATE A REPLICASET
+****************************************************************************
+Step:1 Create replicaset.yml file and save it
+Step:2 Run the Below Commands 
+    - kubectl apply -f replicaset.yml
+    - kubectl get replicaset
+    - kubectl get pods
+
+****************************************************************************
+SCALING UP
+****************************************************************************
+- kubectl scale replicaset my-replicaset --replicas=5
+- kubectl get replicaset
+
+****************************************************************************
+SCALING DOWN
+****************************************************************************
+- kubectl scale replicaset my-replicaset --replicas=2
+- kubectl get replicaset
+
+You can edit the number of replicas in file as well as aplly or directly use --replicas and give the replicas to scale up or down
+Replicas also maintains no of pods based on the number of replicas. that meansif you will manually delete the pods replicaset will recreate the another pod to maintain the number of  replicas
+
+- kubectl delete pod <pod-name>
+- kubectl get pods (you will see that the newly created pod in the list)
+- kubectl delete replicaset my-replicaset #to delete replicaset
+
+***************************************************************************************
+STATEFULSET
+***************************************************************************************
+- A statefulset is a kubernetes controller that manages Pods, but specifically for stateful application (apps that need to remember data or maintain identity).
+- in case of Deployment /Replicaset while creating naming order is random alphabatic words with random names
+    in the satefulset it is labelled from app-1, app-2, app-3
+
+    Create 3 files as shown
+    ------------------------------
+    1. mysql-pvc.yml
+    2. mysql-stafeul.yml
+    3. mysql.yml
+    -----------------------------------------
+    Step:1 Apply the PVC 
+    > kubectl apply -f mysql-pvc.yml
+    > kubectl get pvc
+    
+    Step:2 Apply the MYSQL Service
+    > kubectl apply -f mysql.yml
+    > kubectl get svc 
+
+    Step:3 Apply the satefulset
+    > kubectl apply -f mysql-stateful.yml
+    > kubectl get pods -l app=mysql 
+
+    Step:4 Verfiy the Storage
+    > kubectl get pvc
+
+    Step:5 Connect to Mysql Pod
+    > kubectl exec -it mysql-0 -- bash
+    > mysql -u root -p
+    Now Its time to enter your password (my password is 'admin' you can check on 'mysql-stateful.yml' file)
+    > admin
