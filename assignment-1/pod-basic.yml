@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-basic
+  labels:
+    app: pod-basic
+spec:
+  containers:
+  - name: hello-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+
+    #pod is done, screenshot is taken , add to the assignment
