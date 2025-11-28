@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+stringData:
+  password: pantu
+
+#for decoding: echo "encodedstring" | base64 --decode
