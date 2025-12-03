@@ -1,0 +1,112 @@
+#Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: example-app
+
+---
+# backend deployment
+
+apiVersion: apps/v1
+kind: deployment
+metadata:
+  name: backend
+  namespace: example-sa
+spec:
+  replicas: 1
+  selector:
+    matchlabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: hashicorp/http-echo:0.2.3
+        args: ["-text", "-listen=:8080"]
+        ports:
+        - containerPort: 8080
+---
+#service account
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: example-app
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetport: 8080
+
+---
+
+# db fake deployment
+
+apiVersion: apps/v1
+kind: deployment
+metadata:
+  name: db
+  namespace: example-sa
+spec:
+  replicas: 1
+  selector:
+    matchlabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: hashicorp/http-echo:0.2.3
+        args: ["-text", "-listen=:5432"]
+        ports:
+        - containerPort: 5432
+
+---
+#db service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: example-app
+spec:
+  selector:
+    app: db
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetport: 5432
+
+---
+# frontend development (sleeping containers we will exec into )
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: example-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: curlimages/curl:8.3.0
+        command: ["sh", "-c" ,"sleep 3600"]
+
+
+

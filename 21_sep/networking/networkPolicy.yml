@@ -1,0 +1,34 @@
+#networkPolicies.yml
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: example-app
+spec:
+  podSelector: {} #select all pods from the namespace
+  policyTypes: 
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: example-app
+spec:
+  podSelector: 
+    matchLabels:
+      app: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:
+    - protocol: TCP
+      port: 8080
+
+     #continue from here
